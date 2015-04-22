@@ -4,6 +4,7 @@
             [schema.core :as s]
             [ring.swagger.schema :refer [field describe]]
             ring.swagger.json-schema-dirty
+            [ring.middleware.multipart-params :refer [wrap-multipart-params]]
             [examples.domain :refer [pizza-routes Pizza]]
             [examples.dates :refer [date-routes]])
   (:import [org.joda.time DateTime]))
@@ -177,4 +178,13 @@
       :return Pizza
       :body [body Pizza]
       (ok {})))
+
+  (context* "/file" []
+    :tags ["file"]
+
+    (POST* "/upload" []
+      :multipart-params [file :- ring.swagger.json-schema/file]
+      :middlewares [wrap-multipart-params]
+      :consumes ["multipart/form-data"]
+      (ok (dissoc file :tempfile))))
   )
